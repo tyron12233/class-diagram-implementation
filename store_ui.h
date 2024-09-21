@@ -1,21 +1,8 @@
 #pragma once
+#include <iomanip>
+#include <limits>
 
-// clear screen
-#ifdef _WIN32
-#define CLEAR "cls"
-#else
-#define CLEAR "clear"
-#endif
-
-inline void clearScreen() {
-    std::system(CLEAR);
-}
-
-inline void pauseScreen() {
-    std::cout << "Press Enter to continue...";
-    std::cin.ignore();
-    std::cin.get();
-}
+#include "utils.h"
 
 
 /**
@@ -65,8 +52,12 @@ public:
     }
 
     void addProductToCart() {
+
+
         std::string productId;
         while (true) {
+            displayProducts();
+
             std::cout << endl;
             std::cout << "Enter the product ID you want to buy (-1 to go back): ";
             std::cin >> productId;
@@ -89,13 +80,19 @@ public:
                     Product product = store.getProduct(productId, quantity);
                     cart.addItem(product, quantity);
                 } catch (const std::runtime_error &e) {
+                    std::cout << "\n";
                     std::cout << e.what() << "\n\n";
                     // try again
+                    pauseScreen();
+                    clearScreen();
                     continue;
                 }
                 std::cout << "Product added to the shopping cart!\n\n";
             } else {
                 std::cout << "Product not found!\n\n";
+
+                pauseScreen();
+                clearScreen();
                 // try again
                 continue;
             }
@@ -103,6 +100,7 @@ public:
             char choice;
             std::cout << "Do you want to add another product to the shopping cart? (Y/N): ";
             std::cin >> choice;
+
             if (choice == 'N' || choice == 'n') {
                 break;
             }
@@ -153,12 +151,20 @@ public:
             int choice;
             std::cin >> choice;
 
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Invalid input! Please try again.\n";
+                pauseScreen();
+            }
+
             switch (choice) {
                 case 1:
-                    displayProducts();
+                    clearScreen();
                     addProductToCart();
                     break;
                 case 2:
+                    clearScreen();
                     viewShoppingCart();
                     pauseScreen();
                     break;
